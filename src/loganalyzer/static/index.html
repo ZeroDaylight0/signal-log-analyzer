@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b1020">
+    <title>Анализатор логов — только важное</title>
+    <link rel="stylesheet" href="/assets/app.css">
+  </head>
+  <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Домой — signal/log">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>signal<span class="brand-muted">/log</span></span>
+      </a>
+      <div class="topbar-meta"><span class="live-dot"></span> ЛОКАЛЬНО <span class="topbar-divider">/</span> НЕСКОЛЬКО AI-ПРОВАЙДЕРОВ</div>
+      <a class="github-link" href="#how-it-works">Как это работает <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main class="shell">
+      <section class="hero">
+        <div class="eyebrow"><span class="eyebrow-line"></span> РАЗБОР ИНЦИДЕНТОВ <span class="eyebrow-line"></span></div>
+        <h1>Найдите главное<br>в своих <span>логах.</span></h1>
+        <p class="hero-copy">Загрузите лог — получите суть ошибок,<br class="desktop-break"> подтверждения, хронологию и план действий.</p>
+      </section>
+
+      <section class="workspace settings-workspace" aria-label="Настройки AI-провайдера">
+        <div class="workspace-head">
+          <div><span class="step-number">01</span><span class="section-label"> AI-ПРОВАЙДЕР</span></div>
+          <span class="format-hint">НАСТРОЙКИ ШИФРУЮТСЯ В БРАУЗЕРЕ</span>
+        </div>
+        <div id="provider-locked" class="settings-lock" hidden>
+          <p>Сохранённые настройки зашифрованы. Введите пароль, чтобы открыть их.</p>
+          <form id="unlock-form" class="unlock-form">
+            <label class="field password-field"><span>Пароль настроек</span><input id="unlock-password" type="password" autocomplete="current-password" required></label>
+            <button class="secondary-button unlock-button" type="submit">Разблокировать</button>
+          </form>
+        </div>
+        <div id="provider-active" class="provider-active" hidden>
+          <div class="provider-summary">
+            <span id="provider-badge" class="provider-badge">GEMINI</span>
+            <span id="provider-summary-text"></span>
+            <span class="unlocked-indicator"><span class="live-dot"></span> готово</span>
+          </div>
+          <div class="settings-actions">
+            <button type="button" id="edit-settings" class="secondary-button">Изменить</button>
+            <button type="button" id="lock-settings" class="secondary-button">Заблокировать</button>
+            <button type="button" id="forget-settings" class="text-button">Удалить настройки</button>
+          </div>
+        </div>
+        <form id="provider-form" class="provider-form" hidden>
+          <div class="settings-grid">
+            <label class="field"><span>Провайдер</span>
+              <select id="provider" name="provider">
+                <option value="gemini">Google Gemini</option>
+                <option value="openai">OpenAI · ChatGPT</option>
+                <option value="anthropic">Anthropic · Claude</option>
+                <option value="xai">xAI · Grok</option>
+                <option value="openai-compatible">Другой OpenAI-compatible</option>
+              </select>
+            </label>
+            <label class="field"><span>Модель</span><input id="model" name="model" type="text" autocomplete="off" spellcheck="false" placeholder="Например, gemini-2.5-flash" required></label>
+            <label class="field field-wide"><span>API-ключ</span><input id="api-key" name="api_key" type="password" autocomplete="new-password" spellcheck="false" placeholder="Вставьте ключ выбранного провайдера" required><a id="provider-console" class="provider-console" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Открыть кабинет провайдера ↗</a></label>
+            <label class="field field-wide" id="base-url-field" hidden><span>API Base URL</span><input id="base-url" name="base_url" type="url" autocomplete="url" spellcheck="false" placeholder="https://api.example.com/v1"></label>
+            <div class="settings-note field-wide">
+              <span class="lock-icon" aria-hidden="true">◆</span>
+              <span>Ключ шифруется паролем в этом браузере. На сервер он отправляется только при анализе и не сохраняется в проекте.</span>
+            </div>
+            <label class="field field-wide"><span>Пароль шифрования</span><input id="encryption-password" name="encryption_password" type="password" autocomplete="new-password" minlength="12" placeholder="Не менее 12 символов" required></label>
+          </div>
+          <div class="settings-actions">
+            <button class="secondary-button save-settings-button" type="submit">Зашифровать и сохранить</button>
+            <button type="button" id="cancel-settings" class="text-button" hidden>Отмена</button>
+          </div>
+        </form>
+        <div id="settings-status" class="status settings-status" role="status" aria-live="polite" hidden></div>
+      </section>
+
+      <section class="workspace" aria-label="Рабочая область анализа логов">
+        <div class="workspace-head">
+          <div><span class="step-number">02</span><span class="section-label"> ФАЙЛ С ЛОГАМИ</span></div>
+          <span class="format-hint">.log &nbsp; .txt &nbsp; .json &nbsp; .out</span>
+        </div>
+        <form id="upload-form">
+          <label id="drop-zone" class="drop-zone" for="log-file">
+            <input id="log-file" name="file" type="file" accept=".log,.txt,.json,.out,.csv,text/plain,application/json">
+            <span class="upload-icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32" fill="none"><path d="M16 21V5m0 0L9.5 11.5M16 5l6.5 6.5M6 20v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="drop-title" id="drop-title">Перетащите файл сюда</span>
+            <span class="drop-subtitle" id="drop-subtitle">или <span class="browse-link">выберите файл</span> на компьютере</span>
+            <span class="file-limit">текст UTF-8 · до 1 МБ</span>
+          </label>
+          <div class="selected-file" id="selected-file" hidden>
+            <span class="file-chip-icon">LOG</span>
+            <span class="selected-name" id="selected-name"></span>
+            <span class="selected-size" id="selected-size"></span>
+            <button type="button" id="remove-file" class="icon-button" aria-label="Удалить выбранный файл">×</button>
+          </div>
+          <button class="analyze-button" id="analyze-button" type="submit" disabled>
+            <span class="button-spark" aria-hidden="true">✳</span>
+            <span id="button-label">Разобрать лог</span>
+            <span class="button-arrow" aria-hidden="true">→</span>
+          </button>
+        </form>
+        <div id="status" class="status" role="status" aria-live="polite" hidden></div>
+        <p class="privacy-note"><span class="lock-icon" aria-hidden="true">◆</span> Файл не хранится после запроса; для анализа его содержимое отправляется выбранному AI-провайдеру.</p>
+      </section>
+
+      <section id="results" class="results" aria-live="polite" hidden></section>
+
+      <section id="how-it-works" class="how-section">
+        <div class="how-heading"><span class="step-number">03</span><span class="section-label"> ДЛЯ БЫСТРОЙ ОТЛАДКИ</span></div>
+        <div class="feature-grid">
+          <article class="feature-card"><span class="feature-index">A / ПРИОРИТЕТ</span><h2>Что требует внимания</h2><p>Серьёзность, уверенность оценки и строки лога, подтверждающие каждый вывод.</p></article>
+          <article class="feature-card"><span class="feature-index">B / КОНТЕКСТ</span><h2>Как развивались события</h2><p>Краткая хронология превращает тысячи строк в понятную последовательность.</p></article>
+          <article class="feature-card"><span class="feature-index">C / ДЕЙСТВИЯ</span><h2>Что проверить дальше</h2><p>Практические шаги и оговорки вместо ещё одной стены текста об ошибках.</p></article>
+        </div>
+      </section>
+      <footer><span>signal/log <span class="footer-muted">· локальный анализ логов</span></span><span>ФАЙЛЫ НЕ СОХРАНЯЮТСЯ</span></footer>
+    </main>
+    <script type="module" src="/assets/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">Signal/Log dashboard illustration</title>
+  <desc id="desc">Dark local log analysis dashboard showing encrypted provider settings and a sample incident report.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#111a31"/>
+      <stop offset="1" stop-color="#080d19"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#78e8b8"/>
+      <stop offset="1" stop-color="#b2f6d6"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#02050b" flood-opacity=".38"/>
+    </filter>
+  </defs>
+  <rect width="1440" height="900" rx="28" fill="#070b14"/>
+  <rect x="1" y="1" width="1438" height="898" rx="27" fill="url(#background)" stroke="#273249"/>
+  <path d="M0 30Q0 0 30 0h1380q30 0 30 30v65H0z" fill="#0d1424"/>
+  <circle cx="34" cy="34" r="7" fill="#fb766f"/>
+  <circle cx="57" cy="34" r="7" fill="#f2c65d"/>
+  <circle cx="80" cy="34" r="7" fill="#79d7a9"/>
+  <text x="720" y="40" text-anchor="middle" fill="#77839a" font-family="Segoe UI, sans-serif" font-size="13">127.0.0.1:8000 · Signal/Log</text>
+  <rect x="0" y="95" width="1440" height="66" fill="#0c1321"/>
+  <path d="M0 160.5h1440" stroke="#243047"/>
+  <g transform="translate(70 118)">
+    <path d="M0 19V8m9 11V0m9 19v-7" stroke="#8af0c2" stroke-width="4" stroke-linecap="round"/>
+    <text x="31" y="18" fill="#eef2fb" font-family="Segoe UI, sans-serif" font-size="18" font-weight="700">signal<tspan fill="#8794aa" font-weight="400">/log</tspan></text>
+  </g>
+  <text x="1150" y="133" text-anchor="end" fill="#aab6ca" font-family="Consolas, monospace" font-size="11" letter-spacing="1">LOCAL · MULTI-PROVIDER</text>
+  <circle cx="1170" cy="129" r="4" fill="#8af0c2"/>
+  <text x="720" y="220" text-anchor="middle" fill="#a9b6ca" font-family="Consolas, monospace" font-size="11" letter-spacing="3">РАЗБОР ИНЦИДЕНТОВ</text>
+  <text x="720" y="279" text-anchor="middle" fill="#eef2fb" font-family="Segoe UI, sans-serif" font-size="43" font-weight="700">Найдите главное в своих <tspan fill="#8af0c2">логах.</tspan></text>
+  <text x="720" y="310" text-anchor="middle" fill="#9ba8bd" font-family="Segoe UI, sans-serif" font-size="15">От файла до подтверждённых выводов и плана действий</text>
+  <g filter="url(#shadow)">
+    <rect x="270" y="352" width="900" height="125" rx="12" fill="#111a2d" stroke="#29354d"/>
+    <text x="300" y="383" fill="#8af0c2" font-family="Consolas, monospace" font-size="12">01</text>
+    <text x="329" y="383" fill="#c7d0df" font-family="Consolas, monospace" font-size="11" letter-spacing="1">AI-ПРОВАЙДЕР</text>
+    <text x="1135" y="383" text-anchor="end" fill="#78869e" font-family="Consolas, monospace" font-size="9" letter-spacing="1">ЗАШИФРОВАНО В БРАУЗЕРЕ</text>
+    <rect x="300" y="401" width="115" height="30" rx="5" fill="#142a29" stroke="#285449"/>
+    <text x="357" y="421" text-anchor="middle" fill="#8af0c2" font-family="Consolas, monospace" font-size="10">OPENAI</text>
+    <text x="433" y="420" fill="#e1e7f1" font-family="Segoe UI, sans-serif" font-size="13">OpenAI · ChatGPT</text>
+    <text x="1128" y="420" text-anchor="end" fill="#8e9bb1" font-family="Segoe UI, sans-serif" font-size="11">готово</text>
+    <circle cx="1144" cy="416" r="4" fill="#8af0c2"/>
+    <text x="300" y="454" fill="#78869e" font-family="Segoe UI, sans-serif" font-size="10">Ключ доступен только после разблокировки настроек</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="270" y="493" width="900" height="167" rx="12" fill="#111a2d" stroke="#29354d"/>
+    <text x="300" y="526" fill="#8af0c2" font-family="Consolas, monospace" font-size="12">02</text>
+    <text x="329" y="526" fill="#c7d0df" font-family="Consolas, monospace" font-size="11" letter-spacing="1">ФАЙЛ С ЛОГАМИ</text>
+    <text x="1135" y="526" text-anchor="end" fill="#78869e" font-family="Consolas, monospace" font-size="9">.LOG · .TXT · .JSON</text>
+    <rect x="300" y="544" width="840" height="91" rx="7" fill="#0b1120" stroke="#45536c" stroke-dasharray="5 6"/>
+    <rect x="329" y="565" width="42" height="42" rx="9" fill="#152b2b" stroke="#31584b"/>
+    <path d="M350 593v-17m0 0-7 7m7-7 7 7m-16 8v5h18v-5" fill="none" stroke="#8af0c2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="393" y="581" fill="#e8edf6" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600">Перетащите файл сюда</text>
+    <text x="393" y="603" fill="#8d9ab0" font-family="Segoe UI, sans-serif" font-size="11">или выберите файл на компьютере · до 1 МБ</text>
+    <rect x="300" y="644" width="840" height="1" fill="#28354b"/>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="270" y="676" width="900" height="176" rx="12" fill="#111a2d" stroke="#29354d"/>
+    <text x="300" y="709" fill="#8af0c2" font-family="Consolas, monospace" font-size="10" letter-spacing="1">ПРИМЕР ОТЧЁТА</text>
+    <rect x="1040" y="692" width="98" height="25" rx="4" fill="#392727"/>
+    <text x="1089" y="709" text-anchor="middle" fill="#ffada3" font-family="Consolas, monospace" font-size="9" letter-spacing="1">ВЫСОКИЙ</text>
+    <text x="300" y="749" fill="#edf1f8" font-family="Segoe UI, sans-serif" font-size="19" font-weight="650">Сервис теряет соединение с базой данных</text>
+    <text x="300" y="776" fill="#aab6ca" font-family="Segoe UI, sans-serif" font-size="12">Повторные ошибки подключения начались после перезапуска сервиса.</text>
+    <rect x="300" y="795" width="840" height="35" rx="5" fill="#0a101d"/>
+    <rect x="300" y="795" width="2" height="35" rx="1" fill="#ff9e8f"/>
+    <text x="315" y="817" fill="#b1bfd4" font-family="Consolas, monospace" font-size="10">СТРОКА 184 · connection refused — db-primary:5432</text>
+  </g>
+  <text x="720" y="882" text-anchor="middle" fill="#6f7c93" font-family="Consolas, monospace" font-size="9" letter-spacing="1">ОБРАЗЕЦ ИНТЕРФЕЙСА · НЕ СКРИНШОТ РЕАЛЬНОГО АНАЛИЗА</text>
+</svg>
