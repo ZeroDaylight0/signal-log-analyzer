@@ -87,7 +87,7 @@ function addList(parent, title, values, ordered = false) {
   const list = document.createElement(ordered ? "ol" : "ul");
   for (const item of values) {
     const li = node("li", "", typeof item === "string" ? item : item.event);
-    if (typeof item === "object" && item.line) li.textContent = `Строка ${item.line} · ${item.event}`;
+    if (typeof item === "object" && item.line) li.textContent = `Line ${item.line} · ${item.event}`;
     list.append(li);
   }
   card.append(list);
@@ -99,38 +99,38 @@ function renderResult(result) {
   const severity = (result.overall_severity || "info").toLowerCase();
   const head = node("div", "result-head");
   const heading = document.createElement("div");
-  heading.append(node("div", "result-kicker", "АНАЛИЗ ЗАВЕРШЁН"));
+  heading.append(node("div", "result-kicker", "ANALYSIS COMPLETE"));
   heading.append(node("h2", "result-title", result.filename));
-  heading.append(node("div", "result-meta", `Строк проверено: ${result.log_lines}${result.truncated ? " · часть лога пропущена" : ""}`));
-  const severityNames = { critical: "КРИТИЧНО", high: "ВЫСОКИЙ", medium: "СРЕДНИЙ", low: "НИЗКИЙ", info: "ИНФО" };
+  heading.append(node("div", "result-meta", `Lines checked: ${result.log_lines}${result.truncated ? " · part of the log was skipped" : ""}`));
+  const severityNames = { critical: "CRITICAL", high: "HIGH", medium: "MEDIUM", low: "LOW", info: "INFO" };
   head.append(heading, node("span", `severity-pill severity-${severity}`, severityNames[severity] || severity.toUpperCase()));
   results.append(head, node("p", "summary", result.summary));
 
   const grid = node("div", "result-grid");
   if (result.incidents?.length) {
     const card = node("article", "result-card full");
-    card.append(node("h3", "", `НАХОДКИ · ${result.incidents.length}`));
+    card.append(node("h3", "", `FINDINGS · ${result.incidents.length}`));
     for (const incident of result.incidents) {
       const item = node("div", "incident");
       const title = node("div", "incident-title", incident.title);
       const incidentSeverity = (incident.severity || "info").toLowerCase();
       title.append(node("span", `severity-pill severity-${incidentSeverity}`, severityNames[incidentSeverity] || incidentSeverity.toUpperCase()));
-      const confidence = { high: "высокая уверенность", medium: "средняя уверенность", low: "низкая уверенность" };
+      const confidence = { high: "high confidence", medium: "medium confidence", low: "low confidence" };
       item.append(title, node("p", "", `${incident.explanation} · ${confidence[incident.confidence] || incident.confidence}`));
       for (const evidence of incident.evidence || []) {
-        item.append(node("div", "evidence", `${evidence.line ? `Строка ${evidence.line} · ` : ""}${evidence.text}`));
+        item.append(node("div", "evidence", `${evidence.line ? `Line ${evidence.line} · ` : ""}${evidence.text}`));
       }
       card.append(item);
     }
     grid.append(card);
   }
-  addList(grid, "ХРОНОЛОГИЯ", result.timeline);
-  addList(grid, "СЛЕДУЮЩИЕ ШАГИ", result.recommendations, true);
-  addList(grid, "ОГОВОРКИ", result.caveats);
+  addList(grid, "TIMELINE", result.timeline);
+  addList(grid, "NEXT STEPS", result.recommendations, true);
+  addList(grid, "CAVEATS", result.caveats);
   results.append(grid);
 
   const actions = node("div", "result-actions");
-  const download = node("button", "secondary-button", "Скачать отчёт JSON ↓");
+  const download = node("button", "secondary-button", "Download JSON report ↓");
   download.type = "button";
   download.addEventListener("click", () => {
     const blob = new Blob([JSON.stringify(result, null, 2)], { type: "application/json" });
@@ -187,7 +187,7 @@ function updateProviderFields() {
   const provider = providerSelect.value;
   baseUrlField.hidden = provider !== "openai-compatible";
   baseUrlInput.required = provider === "openai-compatible";
-  modelInput.placeholder = `Например, ${modelDefaults[provider][0]}`;
+  modelInput.placeholder = `For example, ${modelDefaults[provider][0]}`;
   const providerConsole = document.querySelector("#provider-console");
   providerConsole.hidden = !modelDefaults[provider][1];
   if (modelDefaults[provider][1]) providerConsole.href = modelDefaults[provider][1];
@@ -213,13 +213,13 @@ providerSelect.addEventListener("change", updateProviderFields);
 document.querySelector("#edit-settings").addEventListener("click", () => showEditor(activeSettings));
 document.querySelector("#lock-settings").addEventListener("click", showLocked);
 document.querySelector("#forget-settings").addEventListener("click", () => {
-  if (!window.confirm("Удалить зашифрованные настройки с этого браузера?")) return;
+  if (!window.confirm("Delete the encrypted settings from this browser?")) return;
   forgetSettings();
   activeSettings = null;
   providerActive.hidden = true;
   providerLocked.hidden = true;
   showEditor();
-  showStatus(settingsStatus, "Сохранённые настройки удалены.", false, true);
+  showStatus(settingsStatus, "Saved settings deleted.", false, true);
 });
 document.querySelector("#cancel-settings").addEventListener("click", () => showActive(activeSettings));
 
@@ -231,7 +231,7 @@ document.querySelector("#unlock-form").addEventListener("submit", async (event) 
     showActive(settings);
     settingsStatus.hidden = true;
   } catch (error) {
-    showStatus(settingsStatus, error.message || "Не удалось открыть настройки.");
+    showStatus(settingsStatus, error.message || "Could not unlock the settings.");
   } finally {
     password.value = "";
   }
@@ -242,19 +242,19 @@ providerForm.addEventListener("submit", async (event) => {
   const settings = settingsFromForm();
   const password = encryptionPassword.value;
   if (!settings.api_key) {
-    showStatus(settingsStatus, "Введите API-ключ выбранного провайдера.");
+    showStatus(settingsStatus, "Enter an API key for the selected provider.");
     return;
   }
   if (settings.provider === "openai-compatible" && !settings.base_url) {
-    showStatus(settingsStatus, "Укажите API Base URL для выбранного сервиса.");
+    showStatus(settingsStatus, "Enter the API Base URL for the selected service.");
     return;
   }
   try {
     await saveSettings(settings, password);
-    showStatus(settingsStatus, "Настройки зашифрованы и сохранены в этом браузере.", false, true);
+    showStatus(settingsStatus, "Settings encrypted and saved in this browser.", false, true);
     showActive(settings);
   } catch (error) {
-    showStatus(settingsStatus, error.message || "Не удалось сохранить настройки.");
+    showStatus(settingsStatus, error.message || "Could not save the settings.");
   }
 });
 
@@ -275,7 +275,7 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!chosenFile || !activeSettings) return;
   if (chosenFile.size > 1_048_576) {
-    showStatus(statusBox, "Файл больше 1 МБ. Выберите файл поменьше.");
+    showStatus(statusBox, "The file is larger than 1 MB. Choose a smaller file.");
     return;
   }
 
@@ -283,26 +283,26 @@ form.addEventListener("submit", async (event) => {
   body.append("file", chosenFile);
   body.append("settings", JSON.stringify(activeSettings));
   analyzeButton.disabled = true;
-  buttonLabel.textContent = "Анализируем…";
-  showStatus(statusBox, `Файл отправляется в ${providerNames[activeSettings.provider]}.`, true);
+  buttonLabel.textContent = "Analyzing…";
+  showStatus(statusBox, `Sending the file to ${providerNames[activeSettings.provider]}.`, true);
   results.hidden = true;
   try {
     const response = await fetch("/api/analyze", { method: "POST", body });
     const payload = await response.json();
-    if (!response.ok) throw new Error(payload.detail || "Не удалось выполнить анализ.");
+    if (!response.ok) throw new Error(payload.detail || "The analysis failed.");
     renderResult(payload);
     hideStatus();
     results.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
-    showStatus(statusBox, error.message || "Не удалось завершить анализ.");
+    showStatus(statusBox, error.message || "Could not complete the analysis.");
   } finally {
     analyzeButton.disabled = !chosenFile || !activeSettings;
-    buttonLabel.textContent = "Разобрать лог";
+    buttonLabel.textContent = "Analyze log";
   }
 });
 
 if (!globalThis.crypto?.subtle) {
-  showStatus(settingsStatus, "Этот браузер не поддерживает шифрование настроек. Откройте приложение через localhost в современном браузере.");
+  showStatus(settingsStatus, "This browser does not support settings encryption. Open the app via localhost in a modern browser.");
   providerForm.hidden = true;
 } else if (hasSavedSettings()) {
   showLocked();

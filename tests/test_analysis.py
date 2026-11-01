@@ -94,11 +94,11 @@ def test_provider_adapters_normalize_responses(
         base_url=base_url,
     )
     analysis = {
-        "summary": "Сбой соединения.",
+        "summary": "Connection failure.",
         "overall_severity": "medium",
         "incidents": [],
         "timeline": [],
-        "recommendations": ["Проверить сервис."],
+        "recommendations": ["Check the service."],
         "caveats": [],
     }
     captured = {}
@@ -117,7 +117,7 @@ def test_provider_adapters_normalize_responses(
     with httpx.Client(transport=httpx.MockTransport(responder)) as client:
         result = analyze_log("connection refused", "app.log", settings=settings, client=client)
 
-    assert result.summary == "Сбой соединения."
+    assert result.summary == "Connection failure."
     assert captured["url"] == expected_url
     assert captured["headers"][expected_header] in {"Bearer provider-test-key", "provider-test-key"}
     if provider == "anthropic":
@@ -133,7 +133,7 @@ def test_gemini_provider_uses_explicit_settings_without_environment(monkeypatch)
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     settings = ProviderSettings(provider="gemini", model="gemini-2.5-flash", api_key="browser-key")
     result_body = {
-        "summary": "Сервис работает.",
+        "summary": "The service is running.",
         "overall_severity": "info",
         "incidents": [],
         "timeline": [],

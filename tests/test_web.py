@@ -31,7 +31,7 @@ def test_dashboard_and_local_assets_load():
     settings_script = request("GET", "/assets/settings.js")
 
     assert page.status_code == 200
-    assert "Найдите главное" in page.text
+    assert "Find what matters" in page.text
     assert css.status_code == 200
     assert "drop-zone" in css.text
     assert settings_script.status_code == 200

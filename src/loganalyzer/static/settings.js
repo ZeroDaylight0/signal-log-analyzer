@@ -33,7 +33,7 @@ export function hasSavedSettings() {
 }
 
 export async function saveSettings(settings, password) {
-  if (password.length < 12) throw new Error("Пароль шифрования должен содержать не менее 12 символов.");
+  if (password.length < 12) throw new Error("The encryption password must be at least 12 characters long.");
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const key = await encryptionKey(password, salt);
@@ -53,10 +53,10 @@ export async function saveSettings(settings, password) {
 
 export async function unlockSettings(password) {
   const stored = localStorage.getItem(STORAGE_KEY);
-  if (!stored) throw new Error("Сохранённые настройки не найдены.");
+  if (!stored) throw new Error("No saved settings found.");
   const envelope = JSON.parse(stored);
   if (envelope.version !== 1 || envelope.iterations !== ITERATIONS) {
-    throw new Error("Формат сохранённых настроек не поддерживается.");
+    throw new Error("The saved settings format is not supported.");
   }
   const salt = base64ToBytes(envelope.salt);
   const iv = base64ToBytes(envelope.iv);
@@ -70,7 +70,7 @@ export async function unlockSettings(password) {
     return JSON.parse(new TextDecoder().decode(decrypted));
   } catch (error) {
     if (error instanceof DOMException && error.name === "OperationError") {
-      throw new Error("Пароль не подошёл или настройки повреждены.");
+      throw new Error("Wrong password or corrupted settings.");
     }
     throw error;
   }

@@ -7,9 +7,11 @@
 Drop in a file, choose an AI provider, and get evidence-backed findings, a
 timeline, and practical recommendations.
 
+[![CI](https://github.com/ZeroDaylight0/signal-log-analyzer/actions/workflows/ci.yml/badge.svg)](https://github.com/ZeroDaylight0/signal-log-analyzer/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
 ![Interface](https://img.shields.io/badge/UI-local-8af0c2)
 ![Providers](https://img.shields.io/badge/AI_API-5_providers-6d78d2)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 </div>
 
@@ -78,7 +80,8 @@ API requests may incur charges or count toward account limits.
 Open PowerShell and install the project:
 
 ```powershell
-Set-Location H:\LogAnalayser
+git clone https://github.com/ZeroDaylight0/signal-log-analyzer.git
+Set-Location signal-log-analyzer
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install .
 .\.venv\Scripts\loganalyzer.exe web
@@ -113,7 +116,8 @@ is accepted only for local or private addresses.
 Python 3.11 or later is required:
 
 ```bash
-cd /path/to/LogAnalayser
+git clone https://github.com/ZeroDaylight0/signal-log-analyzer.git
+cd signal-log-analyzer
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install .
@@ -193,3 +197,7 @@ pytest
 
 Tests use mocked API responses; no provider credentials or network access are
 required.
+
+## License
+
+[MIT](LICENSE) © 2026 ZeroDaylight0
