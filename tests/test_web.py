@@ -107,3 +107,42 @@ def test_invalid_provider_settings_do_not_echo_api_key():
 
     assert response.status_code == 422
     assert "do-not-echo-this-key" not in response.text
+
+
+def test_cross_site_upload_is_rejected(monkeypatch):
+    monkeypatch.setattr("loganalyzer.web.analyze_log", lambda *args, **kwargs: None)
+
+    foreign = request(
+        "POST",
+        "/api/analyze",
+        data={"settings": SETTINGS},
+        files={"file": ("app.log", b"x", "text/plain")},
+        headers={"Origin": "https://evil.example"},
+    )
+    fetch_metadata = request(
+        "POST",
+        "/api/analyze",
+        data={"settings": SETTINGS},
+        files={"file": ("app.log", b"x", "text/plain")},
+        headers={"Sec-Fetch-Site": "cross-site"},
+    )
+
+    assert foreign.status_code == 403
+    assert fetch_metadata.status_code == 403
+
+
+def test_same_origin_upload_is_allowed(monkeypatch):
+    result = AnalysisResult(
+        filename="app.log", summary="ok", overall_severity="info", log_lines=1, truncated=False
+    )
+    monkeypatch.setattr("loganalyzer.web.analyze_log", lambda *args, **kwargs: result)
+
+    response = request(
+        "POST",
+        "/api/analyze",
+        data={"settings": SETTINGS},
+        files={"file": ("app.log", b"x", "text/plain")},
+        headers={"Origin": "http://testserver", "Sec-Fetch-Site": "same-origin"},
+    )
+
+    assert response.status_code == 200

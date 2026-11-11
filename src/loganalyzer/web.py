@@ -1,7 +1,9 @@
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse
+from urllib.parse import urlsplit
+
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import ValidationError
 
 from .analysis import MAX_UPLOAD_BYTES, AnalysisResult, ProviderSettings, analyze_log
@@ -9,6 +11,23 @@ from .errors import EmptyLogError, LogAnalyzerError
 
 STATIC_DIR = Path(__file__).parent / "static"
 app = FastAPI(title="Log Analyzer", docs_url=None, redoc_url=None)
+
+
+@app.middleware("http")
+async def reject_cross_site_writes(request: Request, call_next):
+    """Stop other websites from posting to the local server.
+
+    A multipart form POST is a "simple" request, so without this check any page
+    open in the browser could make this machine call an AI provider or a private
+    `openai-compatible` endpoint on its behalf.
+    """
+    if request.method not in {"GET", "HEAD", "OPTIONS"}:
+        origin = request.headers.get("origin")
+        host = request.headers.get("host", "")
+        cross_site = request.headers.get("sec-fetch-site") == "cross-site"
+        if cross_site or (origin and urlsplit(origin).netloc.lower() != host.lower()):
+            return JSONResponse({"detail": "Cross-site request rejected."}, status_code=403)
+    return await call_next(request)
 
 
 @app.get("/", include_in_schema=False)
