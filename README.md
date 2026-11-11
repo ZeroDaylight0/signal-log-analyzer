@@ -165,8 +165,14 @@ Supported `AI_PROVIDER` values are `gemini`, `openai`, `anthropic`, `xai`, and
 
 ## Privacy and API keys
 
-Logs can contain addresses, names, internal hostnames, and tokens. Remove
-anything you do not want to disclose before analysis. When you start an
+Logs can contain addresses, names, internal hostnames, and tokens. Before a
+log leaves the machine, likely secrets are masked as `[REDACTED]`: passwords,
+tokens and API keys in `key=value` or JSON form, `Authorization` headers,
+credentials in URLs, private key blocks, and well-known key formats (OpenAI,
+Anthropic, GitHub, Slack, Google, AWS, Telegram, JWT). Line numbers stay the
+same, and the report notes how many values were masked. This is a safety net,
+not a guarantee: remove anything else you do not want to disclose before
+analysis. When you start an
 analysis, the log is sent to the **selected AI provider**; using a local
 application does not mean that the model processes the log locally. The
 application does not save the uploaded file as a project file or report
@@ -183,6 +189,10 @@ While settings are unlocked, the key remains temporarily in the browser
 tab's memory and is sent to the local server only with an analysis request.
 This protection does not cover a compromised computer or malicious browser
 extensions. Do not use web mode as a public service.
+
+The web server rejects cross-site `POST` requests (a foreign `Origin` header or
+`Sec-Fetch-Site: cross-site`), so another website open in the browser cannot
+start analyses through it.
 
 The provider may process requests under its own terms, account settings, and
 data retention policy. Check your organization's rules before submitting

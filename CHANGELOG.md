@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 - Editor config, security policy and contributing guide.
+- Likely secrets are masked locally before a log is sent to a provider; the
+  report says how many values were masked.
+
+### Security
+- The web server rejects cross-site POST requests, so other websites cannot
+  trigger analyses or calls to local `openai-compatible` endpoints.
 
 ## [0.1.0]
 
