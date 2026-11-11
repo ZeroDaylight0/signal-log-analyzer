@@ -222,3 +222,34 @@ def test_analyze_log_reports_upstream_failure(monkeypatch):
     with httpx.Client(transport=httpx.MockTransport(responder)) as client:
         with pytest.raises(LogAnalyzerError, match="HTTP 429: quota exceeded"):
             analyze_log("error", client=client)
+
+
+def test_analyze_log_masks_secrets_before_sending(monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key")
+    captured = {}
+    body = {
+        "summary": "Login failed.",
+        "overall_severity": "low",
+        "incidents": [],
+        "timeline": [],
+        "recommendations": [],
+        "caveats": ["Short log."],
+    }
+
+    def responder(request: httpx.Request) -> httpx.Response:
+        captured["payload"] = json.loads(request.content)
+        return httpx.Response(
+            200,
+            json={"candidates": [{"content": {"parts": [{"text": json.dumps(body)}]}}]},
+        )
+
+    log = "user=bob password=hunter2\nlogin failed"
+    with httpx.Client(transport=httpx.MockTransport(responder)) as client:
+        result = analyze_log(log, "auth.log", client=client)
+
+    sent = captured["payload"]["contents"][0]["parts"][0]["text"]
+    assert "hunter2" not in sent
+    assert "password=[REDACTED]" in sent
+    assert result.log_lines == 2
+    assert result.caveats[0].startswith("1 likely secret value(s) were masked")
+    assert result.caveats[1] == "Short log."
