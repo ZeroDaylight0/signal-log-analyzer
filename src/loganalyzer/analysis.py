@@ -9,6 +9,7 @@ import httpx
 from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
 
 from .errors import ConfigurationError, EmptyLogError, LogAnalyzerError
+from .redaction import redact_secrets
 
 MAX_ANALYSIS_CHARS = 80_000
 MAX_UPLOAD_BYTES = 1_048_576
@@ -300,7 +301,8 @@ def analyze_log(
         raise EmptyLogError("The log is empty.")
 
     provider_settings = settings or _environment_settings()
-    prepared = prepare_log(text)
+    masked_text, redactions = redact_secrets(text)
+    prepared = prepare_log(masked_text)
     safe_filename = filename.replace("\\", "/").rsplit("/", 1)[-1][:200] or "log"
     url, headers, body = _provider_request(provider_settings, safe_filename, prepared)
     owns_client = client is None
@@ -319,9 +321,17 @@ def analyze_log(
         if not isinstance(response_payload, dict):
             raise LogAnalyzerError("The provider returned an unexpected response format.")
         try:
+            analysis = _parse_analysis(_response_text(provider_settings.provider, response_payload))
+            if redactions:
+                caveats = analysis.get("caveats") if isinstance(analysis.get("caveats"), list) else []
+                analysis["caveats"] = [
+                    f"{redactions} likely secret value(s) were masked as [REDACTED] before the log "
+                    "was sent to the provider.",
+                    *caveats,
+                ]
             result = AnalysisResult.model_validate(
                 {
-                    **_parse_analysis(_response_text(provider_settings.provider, response_payload)),
+                    **analysis,
                     "filename": safe_filename,
                     "log_lines": prepared.line_count,
                     "truncated": prepared.truncated,
